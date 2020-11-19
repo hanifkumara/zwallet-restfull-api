@@ -16,7 +16,7 @@
 * [Screenshots](#screenshots)
 * [Contact](#contact)
 
-##About the Project
+## About the Project
 
 Zwallet is an online payment application that is convenient, safe and easy. This project is the backend of the zwallet application, regarding the api restfull
 
@@ -43,3 +43,25 @@ git clone https://github.com/hanifkumara/zwallet-restfull-api.git
 ```sh
 npm install
 ```
+## Screenshots
+
+    <image width="200" src='./screenshots/getdata-user.PNG' />
+    <image width="200" src='./screenshots/add-user.PNG' />
+    <image width="200" src='./screenshots/update-user.PNG' />
+    <image width="200" src='./screenshots/delete-user.PNG' />
+
+## Contributing
+
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## Contact
+
+My Email : hanifkumara00@gmail.com
+
+Project Link: [https://github.com/hanifkumara/zwallet-restfull-api](https://github.com/hanifkumara/zwallet-restfull-api)
