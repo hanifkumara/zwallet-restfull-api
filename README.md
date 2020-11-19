@@ -45,6 +45,8 @@ npm install
 ```
 ## Screenshots
 
+<p align='center'>
+  <span>
     <image width="200" src='./screenshots/getdata-user.PNG' />
     <image width="200" src='./screenshots/add-user.PNG' />
     <image width="200" src='./screenshots/update-user.PNG' />
