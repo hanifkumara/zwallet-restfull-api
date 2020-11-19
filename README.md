@@ -43,7 +43,3 @@ git clone https://github.com/hanifkumara/zwallet-restfull-api.git
 ```sh
 npm install
 ```
-3. Add .env file at root folder project, and add following
-```sh
-REACT_APP_API_URL=[Backend API]
-```
