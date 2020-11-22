@@ -23,12 +23,13 @@ const transaction = {
       .catch(e => console.log(e.message))
   },
   addTranaction: (req, res) => {
-    const { amountTransfer, notes, transactionStatus } = req.body
+    const { amountTransfer, notes, userSenderId, userReceiverId } = req.body
 
     const data = {
       amountTransfer,
       notes,
-      transactionStatus,
+      userSenderId,
+      userReceiverId,
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -40,7 +41,7 @@ const transaction = {
   },
   updateTransaction: (req, res) => {
     const id = req.params.id
-    const { amountTransfer, notes, transactionStatus } = req.body
+    const { amountTransfer, notes, userSenderId, userReceiverId } = req.body
     const data = {}
     if (amountTransfer) {
       data.amountTransfer = req.body.amountTransfer
@@ -48,8 +49,11 @@ const transaction = {
     if (notes) {
       data.notes = req.body.notes
     }
-    if (transactionStatus) {
-      data.transactionStatus = req.body.transactionStatus
+    if (userSenderId) {
+      data.userSenderId = req.body.userSenderId
+    }
+    if (userReceiverId) {
+      data.userReceiverId = req.body.userReceiverId
     }
     transactionModel.updateTransaction(id, data)
       .then(result => {

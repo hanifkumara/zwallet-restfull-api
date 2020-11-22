@@ -3,7 +3,7 @@ const connection = require('../config/db')
 const transaction = {
   getTransaction: () => {
     return new Promise((resolve, reject) => {
-      connection.query('SELECT * FROM transaction ORDER BY createdAt DESC', (error, result) => {
+      connection.query('SELECT transaction.*,user_sender.name as sender, user_receiver.name as receiver from transaction INNER JOIN users user_sender ON transaction.userSenderId = user_sender.id INNER JOIN users user_receiver ON transaction.userReceiverId = user_receiver.id ORDER BY createdAt DESC', (error, result) => {
         if (!error) {
           resolve(result)
         } else {
@@ -14,7 +14,7 @@ const transaction = {
   },
   getTransactionById: (id) => {
     return new Promise((resolve, reject) => {
-      connection.query('SELECT * FROM transaction WHERE id = ?', id, (error, result) => {
+      connection.query('SELECT transaction.*,user_sender.name as sender, user_receiver.name as receiver from transaction INNER JOIN users user_sender ON transaction.userSenderId = user_sender.id INNER JOIN users user_receiver ON transaction.userReceiverId = user_receiver.id WHERE transaction.id = ?', id, (error, result) => {
         if (!error) {
           resolve(result)
         } else {

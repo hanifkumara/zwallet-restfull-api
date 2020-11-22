@@ -1,10 +1,10 @@
 const connection = require('../config/db')
 
 const users = {
-  getUsers: (name, phone, limits, offsets) => {
+  getUsers: (name, phone, limit, offset) => {
     return new Promise((resolve, reject) => {
       if (name || phone) {
-        connection.query('SELECT * FROM users WHERE name LIKE ? OR phone LIKE ?', [`%${name}%`, `%${phone}%`], (error, result) => {
+        connection.query(`SELECT * FROM users WHERE name LIKE ? OR phone LIKE ? LIMIT ${offset}, ${limit}`, [`%${name}%`, `%${phone}%`], (error, result) => {
           if (!error) {
             resolve(result)
           } else {
@@ -12,7 +12,7 @@ const users = {
           }
         })
       } else {
-        connection.query(`SELECT * FROM users LIMIT ${limits} OFFSET ${offsets}`, (error, result) => {
+        connection.query(`SELECT * FROM users LIMIT ${limit} OFFSET ${offset}`, (error, result) => {
           if (!error) {
             resolve(result)
           } else {
