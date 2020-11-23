@@ -26,9 +26,6 @@ app.use(bodyParser.json())
 app.use('/users', routeUsers)
 app.use('/transaction', routeTransaction)
 app.use('/history', routeHistory)
-// app.use((err, req, res, next) => {
-//     helper.response(res, err.status, null, {message: err.message})
-// })
 
 app.use('*', (req, res) => {
   helper.response(res, 404, null, { message: 'URL not found' })
