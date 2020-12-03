@@ -5,9 +5,7 @@ const morgan = require('morgan')
 const PORT = process.env.PORT
 const helper = require('./src/helpers/helper')
 const cors = require('cors')
-const routeTransaction = require('./src/router/transaction')
-const routeUsers = require('./src/router/users')
-const routeHistory = require('./src/router/history')
+const routes = require('./src/router/index')
 const bodyParser = require('body-parser')
 
 const mymiddleware = (req, res, next) => {
@@ -23,12 +21,15 @@ app.use(mymiddleware)
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.use('/users', routeUsers)
-app.use('/transaction', routeTransaction)
-app.use('/history', routeHistory)
+app.use('/v1', routes)
 
-app.use('*', (req, res) => {
-  helper.response(res, 404, null, { message: 'URL not found' })
+app.use('*', (req, res, next) => {
+  const error = new Error('URL Not Found')
+  error.status = 400
+  return next(error)
 })
 
+app.use((err, req, res, next) => {
+  helper.response(res, err.status, null, { message: err.message })
+})
 app.listen(PORT, () => console.log(`Server running in port ${PORT}`))

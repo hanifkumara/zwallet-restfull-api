@@ -1,11 +1,13 @@
 const express = require('express')
 const route = express.Router()
-const transactionController = require('../controller/transaction')
+const { getTransaction, getTransactionBySender, getTransactionById, addTranaction, updateTransaction, deleteTransaction } = require('../controller/transaction')
+const {verifyToken} = require('../middleware/auth')
 
 route
-  .get('/', transactionController.getTransaction)
-  .get('/:id', transactionController.getTransactionById)
-  .post('/', transactionController.addTranaction)
-  .patch('/:id', transactionController.updateTransaction)
-  .delete('/:id', transactionController.deleteTransaction)
+  .get('/', verifyToken, getTransaction)
+  .get('/idSender/:id', verifyToken, getTransactionBySender)
+  .get('/:id', verifyToken, getTransactionById)
+  .post('/', verifyToken, addTranaction)
+  .patch('/:id', verifyToken, updateTransaction)
+  .delete('/:id', verifyToken, deleteTransaction)
 module.exports = route
