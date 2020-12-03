@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const {checkEmail, checkUser, insertUser} = require('../models/auth')
-const createError = require('http-errors')  
+const createError = require('http-errors')
 const helper = require('../helpers/helper')
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken')
@@ -19,7 +19,7 @@ exports.login = (req, res, next) => {
             userId : user.id,
             email : user.email
           }
-          jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1h' }, function(err, token) {
+          jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1s' }, function(err, token) {
             user.token = token 
             return helper.response(res, 200, user, null)
           });

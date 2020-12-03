@@ -30,6 +30,6 @@ app.use('*', (req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-  helper.response(res, err.status, null, { message: err.message })
+  helper.response(res, err.status = 500, null, { message: err.message })
 })
 app.listen(PORT, () => console.log(`Server running in port ${PORT}`))

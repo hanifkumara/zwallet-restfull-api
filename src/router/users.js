@@ -1,8 +1,9 @@
 const express = require('express')
 const route = express.Router()
 const {getUsers, getUserById, addUser, updateUser, deleteUser} = require('../controller/users')
-const {verifyToken} = require('../middleware/auth')
+const { verifyToken} = require('../middleware/auth')
 const {uploadMulter} = require('../middleware/upload')
+
 
 route
   .get('/', getUsers)
