@@ -5,7 +5,7 @@ const {verifyToken} = require('../middleware/auth')
 const {uploadMulter} = require('../middleware/upload')
 
 route
-  .get('/', verifyToken, getUsers)
+  .get('/', getUsers)
   .get('/:id', verifyToken, getUserById)
   .post('/', verifyToken, uploadMulter.single('image'), addUser)
   .patch('/:id', verifyToken,updateUser)
