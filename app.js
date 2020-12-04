@@ -22,6 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 app.use('/v1', routes)
+app.use('/upload', express.static('./image'))
 
 app.use('*', (req, res, next) => {
   const error = new Error('URL Not Found')

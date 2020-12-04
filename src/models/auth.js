@@ -24,10 +24,9 @@ exports.checkUser = (username) => {
   })
 }
 
-
 exports.insertUser = (data) => {
   return new Promise((resolve, reject) => {
-    connection.query(`INSERT INTO users SET ? `, data, (error, result) => {
+    connection.query('INSERT INTO users SET ? ', data, (error, result) => {
       if (!error) {
         resolve(result)
       } else {

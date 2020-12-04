@@ -1,12 +1,12 @@
-const bcrypt = require('bcryptjs');
-const {checkEmail, checkUser, insertUser} = require('../models/auth')
+const bcrypt = require('bcryptjs')
+const { checkEmail, checkUser, insertUser } = require('../models/auth')
 const createError = require('http-errors')
 const helper = require('../helpers/helper')
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid')
 const jwt = require('jsonwebtoken')
 
 exports.login = (req, res, next) => {
-  const {username, password} = req.body
+  const { username, password } = req.body
   checkUser(username)
     .then(result => {
       if (result.length > 0) {
@@ -16,16 +16,16 @@ exports.login = (req, res, next) => {
           delete user.password
 
           const payload = {
-            userId : user.id,
-            email : user.email
+            userId: user.id,
+            email: user.email
           }
-          jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '1s' }, function(err, token) {
-            user.token = token 
+          jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '5h' }, function (err, token) {
+            user.token = token
             return helper.response(res, 200, user, null)
-          });
-        });
+          })
+        })
       } else {
-        return helper.response(res, 401, null, {message: 'Username Unlisted!!'})
+        return helper.response(res, 401, null, { message: 'Username Unlisted!!' })
       }
     })
     .catch(() => {
@@ -49,7 +49,7 @@ exports.register = (req, res, next) => {
         bcrypt.hash(password, salt, function (err, hash) {
           const data = {
             id,
-            username, 
+            username,
             email,
             password: hash,
             createdAt: new Date(),

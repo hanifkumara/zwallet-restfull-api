@@ -1,32 +1,32 @@
-const {getUsers, getUserById, addUser, updateUser, deleteUser} = require('../models/users')
+const { getUsers, getUserById, addUser, updateUser, deleteUser } = require('../models/users')
 const helper = require('../helpers/helper')
 const createError = require('http-errors')
+const { pagination } = require('../helpers/pagination')
 require('dotenv').config()
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs')
+const redis = require('redis')
+const client = redis.createClient(6379)
 
-exports.getUsers = (req, res, next) => {
+exports.getUsers = async (req, res, next) => {
   const name = req.query.name
   const phone = req.query.phone
-  const page = req.query.page || 1
-  const limit = req.query.limit || 3
+  const page = parseInt(req.query.page) || 1
+  const limit = parseInt(req.query.limit) || 3
   const offset = (page - 1) * limit
+  const setPagination = await pagination(limit, page)
   getUsers(name, phone, limit, offset)
     .then(result => {
       if (result.length === 0) {
         return helper.response(res, 404, null, { message: 'data not found' })
       }
-      const pagination = {
-        previousPage: page - 1 > 0 ? `${process.env.BASE_URL}/users?page=${page - 1}` : null,
-        currentPage: `${process.env.BASE_URL}/users?page=${page}`,
-        nextPage: parseInt(page) + 1 > limit ? null : `${process.env.BASE_URL}/users?page=${parseInt(page) + 1}`
-      }
-      helper.response(res, 200, result, null, pagination)
+      client.setex('getAllUsers', 60 * 60 * 60, JSON.stringify(result))
+      helper.response(res, 200, { users: result, pagination: setPagination }, null)
     })
     .catch(() => {
       const error = createError.InternalServerError()
       return next(error)
     })
-},
+}
 exports.getUserById = (req, res, next) => {
   const id = req.params.id
   getUserById(id)
@@ -34,6 +34,7 @@ exports.getUserById = (req, res, next) => {
       if (result.length === 0) {
         return helper.response(res, 404, null, { message: 'id not found' })
       }
+      client.setex('cacheUserId' + id, 60 * 60 * 60, JSON.stringify(result))
       helper.response(res, 200, result, null)
     })
     .catch(() => {
@@ -47,8 +48,8 @@ exports.addUser = (req, res, next) => {
   addUser(data)
     .then(result => {
       const resultData = {
-        insertId : result.insertId,
-        data: { ...data}
+        insertId: result.insertId,
+        data: { ...data }
       }
       helper.response(res, 201, resultData, null)
     })
@@ -58,18 +59,17 @@ exports.addUser = (req, res, next) => {
     })
 },
 exports.updateUser = (req, res, next) => {
-  const {myId} = req
-  console.log('ini id saya', myId)
-  const { name, phone, photo, username, email, password, pin, balance } = req.body
+  const { myId } = req
+  const { name, phone, username, email, password, pin, balance } = req.body
   const data = {}
+
+  data.photo = `${process.env.BASE_URL}/upload/${req.file.filename}`
+
   if (name) {
     data.name = req.body.name
   }
   if (phone) {
     data.phone = req.body.phone
-  }
-  if (photo) {
-    data.photo = req.body.photo
   }
   if (username) {
     data.username = req.body.username
@@ -86,10 +86,10 @@ exports.updateUser = (req, res, next) => {
   if (balance) {
     data.balance = req.body.balance
   }
+
   bcrypt.genSalt(10, function (err, salt) {
     bcrypt.hash(password, salt, function (err, hash) {
       data.password = hash
-      console.log(`ini data nya`,data)
       updateUser(myId, data)
         .then(result => {
           if (result.affectedRows === 0) {
@@ -112,7 +112,7 @@ exports.deleteUser = (req, res, next) => {
       if (result.affectedRows === 0) {
         return helper.response(res, 404, null, { message: 'id not found' })
       }
-      helper.response(res, 200, {message : 'delete sucess'}, null)
+      helper.response(res, 200, { message: 'delete sucess' }, null)
     })
     .catch(() => {
       const error = createError.InternalServerError()

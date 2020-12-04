@@ -1,4 +1,5 @@
 const connection = require('../config/db')
+const { actionQuery } = require('../helpers/helper')
 
 exports.getUsers = (name, phone, limit, offset) => {
   return new Promise((resolve, reject) => {
@@ -21,47 +22,21 @@ exports.getUsers = (name, phone, limit, offset) => {
     }
   })
 },
+exports.countUsers = () => {
+  return actionQuery('SELECT COUNT(*) AS totalData FROM users')
+},
 exports.getUserById = (id) => {
-  return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM users WHERE id = ?', id, (error, result) => {
-      if (!error) {
-        resolve(result)
-      } else {
-        reject(error)
-      }
-    })
-  })
+  return actionQuery('SELECT * FROM users WHERE id = ?', id)
 },
-exports.addUser = (data) => {
-  return new Promise((resolve, reject) => {
-    connection.query('INSERT INTO users SET ?', data, (error, result) => {
-      if (!error) {
-        resolve(result)
-      } else {
-        reject(error)
-      }
-    })
-  })
-},
+
+// exports.addUser = (data) => {
+//   return actionQuery('INSERT INTO users SET ?', data, id)
+
+// },
 exports.updateUser = (myId, data) => {
-  return new Promise((resolve, reject) => {
-    connection.query('UPDATE users SET ? WHERE id = ?', [data, myId], (error, result) => {
-      if (!error) {
-        resolve(result)
-      } else {
-        reject(error)
-      }
-    })
-  })
+  return actionQuery('UPDATE users SET ? WHERE id = ?', [data, myId])
 },
+
 exports.deleteUser = (id) => {
-  return new Promise((resolve, reject) => {
-    connection.query('DELETE FROM users WHERE id = ?', id, (error, result) => {
-      if (!error) {
-        resolve(result)
-      } else {
-        reject(error)
-      }
-    })
-  })
+  return actionQuery('DELETE FROM users WHERE id = ?', id)
 }

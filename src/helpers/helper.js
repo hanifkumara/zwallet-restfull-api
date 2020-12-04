@@ -11,15 +11,15 @@ module.exports = {
     return res.status(resultPrint.statusCode).json(resultPrint)
   },
 
-actionQuery: (...args) => {
-  return new Promise((resolve, reject) => {
-    connection.query(...args, (error, result) => {
-      if (!error) {
-        resolve(result)
-      } else {
-        reject(error)
-      }
+  actionQuery: (...args) => {
+    return new Promise((resolve, reject) => {
+      connection.query(...args, (error, result) => {
+        if (!error) {
+          resolve(result)
+        } else {
+          reject(error)
+        }
+      })
     })
-  })
   }
 }

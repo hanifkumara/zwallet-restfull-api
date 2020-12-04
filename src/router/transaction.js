@@ -1,7 +1,7 @@
 const express = require('express')
 const route = express.Router()
 const { getTransaction, getTransactionBySender, getTransactionById, addTranaction, updateTransaction, deleteTransaction } = require('../controller/transaction')
-const {verifyToken} = require('../middleware/auth')
+const { verifyToken } = require('../middleware/auth')
 
 route
   .get('/', verifyToken, getTransaction)
