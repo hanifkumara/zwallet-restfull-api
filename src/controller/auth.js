@@ -4,6 +4,8 @@ const createError = require('http-errors')
 const helper = require('../helpers/helper')
 const { v4: uuidv4 } = require('uuid')
 const jwt = require('jsonwebtoken')
+const { sendEmail } = require('../helpers/email')
+
 
 exports.login = (req, res, next) => {
   const { username, password } = req.body
@@ -17,9 +19,10 @@ exports.login = (req, res, next) => {
 
           const payload = {
             userId: user.id,
-            email: user.email
+            email: user.email,
+            roleId: user.roleId
           }
-          jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '5h' }, function (err, token) {
+          jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '20m' }, function (err, token) {
             user.token = token
             return helper.response(res, 200, user, null)
           })
@@ -39,8 +42,10 @@ exports.register = (req, res, next) => {
   const {
     username,
     email,
-    password
+    password,
+    roleId
   } = req.body
+  const message = { username, password }
   checkEmail(email)
     .then(result => {
       console.log(result)
@@ -52,11 +57,13 @@ exports.register = (req, res, next) => {
             username,
             email,
             password: hash,
+            roleId,
             createdAt: new Date(),
             updatedAt: new Date()
           }
           insertUser(data)
             .then(() => {
+              sendEmail(email, message)
               return helper.response(res, 201, { message: 'Register Sucsess' }, null)
             })
         })
@@ -67,3 +74,15 @@ exports.register = (req, res, next) => {
       return next(error)
     })
 }
+
+// exports.sendEmail = (req, res) => {
+//   const email = req.body.email
+//   const message = req.body.message
+//   sendEmail(email, message)
+//     .then(result => {
+//       return helper.response(res, 200, { id: result.messageId }, null)
+//     })
+//     .catch(err => {
+//       return helper.response(res, 500, null, { message: 'Send email Error' })
+//     })
+// }

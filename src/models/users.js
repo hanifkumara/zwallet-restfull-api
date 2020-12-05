@@ -12,7 +12,7 @@ exports.getUsers = (name, phone, limit, offset) => {
         }
       })
     } else {
-      connection.query(`SELECT * FROM users LIMIT ${limit} OFFSET ${offset}`, (error, result) => {
+      connection.query(`SELECT * FROM users ORDER BY createdAt DESC LIMIT ${limit} OFFSET ${offset}`, (error, result) => {
         if (!error) {
           resolve(result)
         } else {

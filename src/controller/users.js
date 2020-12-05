@@ -6,6 +6,7 @@ require('dotenv').config()
 const bcrypt = require('bcryptjs')
 const redis = require('redis')
 const client = redis.createClient(6379)
+const {updateEmail} = require('../helpers/email')
 
 exports.getUsers = async (req, res, next) => {
   const name = req.query.name
@@ -42,6 +43,22 @@ exports.getUserById = (req, res, next) => {
       return next(error)
     })
 },
+exports.myProfile = (req,res,next) => {
+  const {myId} = req
+  console.log('ini dalah', myId)
+  getUserById(myId)
+    .then(result => {
+      if (result.length === 0) {
+        return helper.response(res, 404, null, { message: 'id not found' })
+      }
+      delete result[0].password
+      helper.response(res, 200, result, null)
+    })
+    .catch(() => {
+      const error = createError.InternalServerError()
+      return next(error)
+    })
+}
 exports.addUser = (req, res, next) => {
   const { name, phone, photo, username, email, password, pin, balance } = req.body
   const data = { name, phone, photo, username, email, password, pin, balance }
@@ -60,10 +77,10 @@ exports.addUser = (req, res, next) => {
 },
 exports.updateUser = (req, res, next) => {
   const { myId } = req
-  const { name, phone, username, email, password, pin, balance } = req.body
+  const { name, phone, username, email, password, pin, balance, roleId } = req.body
   const data = {}
 
-  data.photo = `${process.env.BASE_URL}/upload/${req.file.filename}`
+  data.photo = `${process.env.BASE_URL}/v1/upload/${req.file.filename}`
 
   if (name) {
     data.name = req.body.name
@@ -77,32 +94,50 @@ exports.updateUser = (req, res, next) => {
   if (email) {
     data.email = req.body.email
   }
-  if (password) {
-    data.password = req.body.password
-  }
   if (pin) {
     data.pin = req.body.pin
   }
   if (balance) {
     data.balance = req.body.balance
   }
-
-  bcrypt.genSalt(10, function (err, salt) {
-    bcrypt.hash(password, salt, function (err, hash) {
-      data.password = hash
-      updateUser(myId, data)
-        .then(result => {
-          if (result.affectedRows === 0) {
-            return helper.response(res, 404, null, { message: 'id not found' })
-          }
-          helper.response(res, 200, data, null)
-        })
-        .catch(() => {
-          const error = createError.InternalServerError()
-          return next(error)
-        })
+  if (roleId) {
+    data.roleId = req.body.roleId
+  }
+  if (!password) {
+    delete data.password
+    updateUser(myId, data)
+      .then(result => {
+        updateEmail(email, email)
+        if (result.affectedRows === 0) {
+          return helper.response(res, 404, null, { message: 'id not found' })
+        }
+        delete data.password
+        helper.response(res, 200, data, null)
+      })
+      .catch(() => {
+        const error = createError.InternalServerError()
+        return next(error)
+      })
+  } else if (password) {
+    bcrypt.genSalt(10, function (err, salt) {
+      bcrypt.hash(password, salt, function (err, hash) {
+        data.password = hash
+        updateUser(myId, data)
+          .then(result => {
+            updateEmail(email, email)
+            if (result.affectedRows === 0) {
+              return helper.response(res, 404, null, { message: 'id not found' })
+            }
+            delete data.password
+            helper.response(res, 200, data, null)
+          })
+          .catch(() => {
+            const error = createError.InternalServerError()
+            return next(error)
+          })
+      })
     })
-  })
+  }
 },
 
 exports.deleteUser = (req, res, next) => {
