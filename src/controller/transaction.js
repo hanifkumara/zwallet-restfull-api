@@ -1,13 +1,14 @@
 const { addTransaction, getTransaction, getTransactionBySender, getTransactionById, deleteTransaction, updateTransaction } = require('../models/transaction')
 const helper = require('../helpers/helper')
 const createError = require('http-errors')
+const { pagination, paginationTransaction } = require('../helpers/pagination')
 
 exports.getTransaction = (req, res, next) => {
   const page = req.query.page || 1
   const limit = req.query.limit || 3
   const offset = (page - 1) * limit
   const sort = req.query.sort || 'DESC'
-  getTransaction(sort, limit, offset, myId)
+  getTransaction(sort, limit, offset)
     .then(result => {
       const resultTransaction = result
       // res.json(resultTransaction)
@@ -23,25 +24,19 @@ exports.getTransaction = (req, res, next) => {
       return next(error)
     })
 }
-exports.getTransactionBySender = (req, res, next) => {
+exports.getTransactionBySender = async (req, res, next) => {
   const { myId } = req
-  console.log(myId)
-  const id = req.params.id
+  const idTransaction = req.params.idTransaction
   const page = req.query.page || 1
   const limit = req.query.limit || 4
   const offset = (page - 1) * limit
-  getTransactionBySender(id, limit, offset)
+  const setPagination = await paginationTransaction(limit, page, myId)
+  getTransactionBySender(myId, limit, offset, idTransaction)
     .then(result => {
-      console.log(result)
       if (result.length === 0) {
         return helper.response(res, 404, null, { message: 'id not found' })
       }
-      const pagination = {
-        previousPage: page - 1 > 0 ? `${process.env.BASE_URL}/transaction?page=${page - 1}` : null,
-        currentPage: `${process.env.BASE_URL}/transaction?page=${page}`,
-        nextPage: parseInt(page) + 1 > limit ? null : `${process.env.BASE_URL}/transaction?page=${parseInt(page) + 1}`
-      }
-      helper.response(res, 200, result, null, pagination)
+      helper.response(res, 200, {transaction: result, pagination: setPagination}, null)
     })
     .catch(() => {
       const error = createError.InternalServerError()
@@ -52,7 +47,6 @@ exports.getTransactionById = (req, res, next) => {
   const id = req.params.id
   getTransactionById(id)
     .then(result => {
-      console.log(result)
       if (result.length === 0) {
         return helper.response(res, 404, null, { message: 'id not found' })
       }
@@ -64,12 +58,13 @@ exports.getTransactionById = (req, res, next) => {
     })
 }
 exports.addTranaction = (req, res, next) => {
-  const { amountTransfer, notes, userSenderId, userReceiverId } = req.body
+  const { amountTransfer, notes, userReceiverId } = req.body
+  const {myId} = req
 
   const data = {
     amountTransfer,
     notes,
-    userSenderId,
+    userSenderId: myId,
     userReceiverId,
     createdAt: new Date(),
     updatedAt: new Date()
@@ -122,7 +117,7 @@ exports.deleteTransaction = (req, res, next) => {
       if (result.affectedRows === 0) {
         return helper.response(res, 404, null, { message: 'id not found' })
       }
-      helper.response(res, 200, result, null)
+      helper.response(res, 200, {messgae: 'Delete success!!'}, null)
     })
     .catch(() => {
       const error = createError.InternalServerError()

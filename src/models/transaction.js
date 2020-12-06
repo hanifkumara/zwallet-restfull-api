@@ -1,4 +1,5 @@
 const connection = require('../config/db')
+const { actionQuery } = require('../helpers/helper')
 
 exports.getTransaction = (sort, limit, offset) => {
   return new Promise((resolve, reject) => {
@@ -11,20 +12,25 @@ exports.getTransaction = (sort, limit, offset) => {
     })
   })
 },
-exports.getTransactionBySender = (id, limit, offset) => {
+exports.getTransactionBySender = (myId, limit, offset, idTransaction) => {
   return new Promise((resolve, reject) => {
-    connection.query(`SELECT transaction.*,user_receiver.phone as phoneReceiver, user_receiver.name as receiver, user_receiver.photo as receiverPhoto from transaction INNER JOIN users user_sender ON transaction.userSenderId = user_sender.id INNER JOIN users user_receiver ON transaction.userReceiverId = user_receiver.id WHERE userSenderId = ${id} LIMIT ${offset}, ${limit}`, (error, result) => {
-      if (!error) {
-        connection.query('SELECT COUNT(userSenderId) FROM transaction WHERE userSenderId = 3', (error2, result2) => {
-          resolve({
-            data: result,
-            rows: result2[0]['COUNT(userSenderId)']
-          })
-        })
-      } else {
-        reject(error)
-      }
-    })
+    if (idTransaction) {
+      connection.query(`SELECT * FROM transaction WHERE userSenderId = '${myId}' && id = ${idTransaction}`, (error, result) => {
+        if (!error) {
+          resolve(result)
+        } else {
+          reject(error)
+        }
+      })
+    } else if (myId, offset, limit){
+      connection.query(`SELECT transaction.*,user_receiver.phone as phoneReceiver, user_receiver.name as receiver, user_receiver.photo as receiverPhoto from transaction INNER JOIN users user_sender ON transaction.userSenderId = user_sender.id INNER JOIN users user_receiver ON transaction.userReceiverId = user_receiver.id WHERE userSenderId = '${myId}' LIMIT ${offset}, ${limit}`, (error, result) => {
+        if (!error) {
+          resolve(result)
+        } else {
+          reject(error)
+        }
+      })
+    }
   })
 },
 exports.getTransactionById = (id) => {
@@ -70,4 +76,7 @@ exports.deleteTransaction = (id) => {
       }
     })
   })
+}
+exports.countTransaction = (myId) => {
+  return actionQuery(`SELECT COUNT(*) AS totalData FROM transaction WHERE userSenderId  = '${myId}'`)
 }

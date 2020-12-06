@@ -5,7 +5,8 @@ const { verifyToken } = require('../middleware/auth')
 
 route
   .get('/', verifyToken, getTransaction)
-  .get('/idSender/:id', verifyToken, getTransactionBySender)
+  .get('/idSender', verifyToken, getTransactionBySender)
+  .get('/idSender/:idTransaction', verifyToken, getTransactionBySender)
   .get('/:id', verifyToken, getTransactionById)
   .post('/', verifyToken, addTranaction)
   .patch('/:id', verifyToken, updateTransaction)

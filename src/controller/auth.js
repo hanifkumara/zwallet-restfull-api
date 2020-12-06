@@ -48,7 +48,6 @@ exports.register = (req, res, next) => {
   const message = { username, password }
   checkEmail(email)
     .then(result => {
-      console.log(result)
       if (result.length > 0) return helper.response(res, 401, null, { message: 'Email already exist!!' })
       bcrypt.genSalt(10, function (err, salt) {
         bcrypt.hash(password, salt, function (err, hash) {
@@ -65,6 +64,9 @@ exports.register = (req, res, next) => {
             .then(() => {
               sendEmail(email, message)
               return helper.response(res, 201, { message: 'Register Sucsess' }, null)
+            })
+            .catch(() => {
+              return helper.response(res, 401, null, new Error)
             })
         })
       })
