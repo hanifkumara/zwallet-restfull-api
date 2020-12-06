@@ -9,10 +9,11 @@ const client = redis.createClient(6379)
 const {updateEmail} = require('../helpers/email')
 
 exports.getUsers = async (req, res, next) => {
+  console.log('debug controller')
   const name = req.query.name
   const phone = req.query.phone
   const page = parseInt(req.query.page) || 1
-  const limit = parseInt(req.query.limit) || 3
+  const limit = parseInt(req.query.limit) || 5
   const offset = (page - 1) * limit
   const setPagination = await pagination(limit, page)
   getUsers(name, phone, limit, offset)
@@ -20,8 +21,13 @@ exports.getUsers = async (req, res, next) => {
       if (result.length === 0) {
         return helper.response(res, 404, null, { message: 'data not found' })
       }
-      client.setex('getAllUsers', 60 * 60 * 60, JSON.stringify(result))
-      helper.response(res, 200, { users: result, pagination: setPagination }, null)
+      const resultUser = result.map(value => {
+        delete value.password
+        return value
+      })
+
+      client.setex('getAllUsers', 60 * 60 * 60, JSON.stringify(resultUser))
+      helper.response(res, 200, { users: resultUser, pagination: setPagination }, null)
     })
     .catch(() => {
       const error = createError.InternalServerError()

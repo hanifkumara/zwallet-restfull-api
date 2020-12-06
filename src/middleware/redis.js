@@ -6,6 +6,7 @@ const { response } = require('../helpers/helper')
 exports.getCacheAllUsers = (req, res, next) => {
   client.get('getAllUsers', function (err, data) {
     if (data !== null) {
+      console.log('debug controller')
       const result = JSON.parse(data)
       delete result[0].password
       return response(res, 200, result, null)

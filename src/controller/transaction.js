@@ -3,21 +3,17 @@ const helper = require('../helpers/helper')
 const createError = require('http-errors')
 const { pagination, paginationTransaction } = require('../helpers/pagination')
 
-exports.getTransaction = (req, res, next) => {
+exports.getTransaction = async (req, res, next) => {
   const page = req.query.page || 1
   const limit = req.query.limit || 3
   const offset = (page - 1) * limit
+  const setPagination = await pagination(limit, page)
   const sort = req.query.sort || 'DESC'
   getTransaction(sort, limit, offset)
     .then(result => {
-      const resultTransaction = result
+      console.log(result[0].password)
       // res.json(resultTransaction)
-      const pagination = {
-        previousPage: page - 1 > 0 ? `${process.env.BASE_URL}/transaction?page=${page - 1}` : null,
-        currentPage: `${process.env.BASE_URL}/transaction?page=${page}`,
-        nextPage: parseInt(page) + 1 > limit ? null : `${process.env.BASE_URL}/transaction?page=${parseInt(page) + 1}`
-      }
-      helper.response(res, 200, resultTransaction, null, pagination)
+      helper.response(res, 200, { result: result, pagination: setPagination}, null)
     })
     .catch(() => {
       const error = createError.InternalServerError()

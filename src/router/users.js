@@ -6,7 +6,7 @@ const { uploadMulter } = require('../middleware/upload')
 const { deleteCacheAllUsers, getCacheAllUsers, cacheUserId } = require('../middleware/redis')
 
 route
-  .get('/', roleAdmin, getUsers)
+  .get('/', getCacheAllUsers, getUsers)
   .get('/myprofile', verifyToken, myProfile)
   .get('/:id', verifyToken, cacheUserId, getUserById)
   .post('/', verifyToken, deleteCacheAllUsers, addUser)
