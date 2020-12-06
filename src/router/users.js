@@ -1,12 +1,13 @@
 const express = require('express')
 const route = express.Router()
-const { getUsers, getUserById, addUser, updateUser, deleteUser, myProfile } = require('../controller/users')
+const { getUsers, getUserById, addUser, updateUser, deleteUser, myProfile, searchUser } = require('../controller/users')
 const { verifyToken, roleAdmin } = require('../middleware/auth')
 const { uploadMulter } = require('../middleware/upload')
 const { deleteCacheAllUsers, getCacheAllUsers, cacheUserId } = require('../middleware/redis')
 
 route
   .get('/', getCacheAllUsers, getUsers)
+  .get('/search', searchUser)
   .get('/myprofile', verifyToken, myProfile)
   .get('/:id', verifyToken, cacheUserId, getUserById)
   .post('/', verifyToken, deleteCacheAllUsers, addUser)

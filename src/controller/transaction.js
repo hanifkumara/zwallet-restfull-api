@@ -11,8 +11,6 @@ exports.getTransaction = async (req, res, next) => {
   const sort = req.query.sort || 'DESC'
   getTransaction(sort, limit, offset)
     .then(result => {
-      console.log(result[0].password)
-      // res.json(resultTransaction)
       helper.response(res, 200, { result: result, pagination: setPagination}, null)
     })
     .catch(() => {

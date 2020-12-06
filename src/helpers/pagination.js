@@ -18,7 +18,6 @@ exports.pagination = async (limit, page) => {
 
 exports.paginationTransaction = async (limit, page, myId) => {
   const transaction = await countTransaction(myId)
-  console.log(transaction)
   const totalData = transaction[0].totalData
   const totalPage = Math.ceil(totalData / limit)
   const setPagination = {

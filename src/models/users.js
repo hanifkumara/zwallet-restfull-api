@@ -4,7 +4,7 @@ const { actionQuery } = require('../helpers/helper')
 exports.getUsers = (name, phone, limit, offset) => {
   return new Promise((resolve, reject) => {
     if (name || phone) {
-      connection.query(`SELECT * FROM users WHERE name LIKE ? OR phone LIKE ? LIMIT ${offset}, ${limit}`, [`%${name}%`, `%${phone}%`], (error, result) => {
+      connection.query(`SELECT * FROM users WHERE name LIKE ? OR phone LIKE ?`, [`%${name}%`, `%${phone}%`], (error, result) => {
         if (!error) {
           resolve(result)
         } else {

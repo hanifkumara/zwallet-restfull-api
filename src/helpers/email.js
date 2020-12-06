@@ -94,7 +94,6 @@ exports.sendEmail = (email, text) => {
 }
 
 exports.updateEmail = (email, text) => {
-    console.log(email)
     return new Promise((resolve, reject) => {
         const message = {
             from: process.env.EMAIL_USERNAME, // sender address
