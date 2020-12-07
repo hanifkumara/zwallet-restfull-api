@@ -14,7 +14,7 @@ exports.sendEmail = (email, text) => {
     const message = {
       from: process.env.EMAIL_USERNAME, // sender address
       to: email, // list of receivers
-      subject: "Hello ✔", // Subject line
+      subject: "Notification Account Zwallet ✔", // Subject line
       html: `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,7 +98,7 @@ exports.updateEmail = (email, text) => {
         const message = {
             from: process.env.EMAIL_USERNAME, // sender address
             to: email, // list of receivers
-            subject: "Hello ✔", // Subject line
+            subject: "Notification Account Zwallet ✔", // Subject line
             html: `<!DOCTYPE html>
 <html lang="en">
 <head>
