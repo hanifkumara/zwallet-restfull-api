@@ -1,7 +1,6 @@
 const nodemailer = require('nodemailer')
 const transporter = nodemailer.createTransport({
-  sendMail: true,
-  host: 'smtp.gmail.com',
+  host: 'smtp.ethereal.email',
   port: 587,
   secure: false,
   auth: {
