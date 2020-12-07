@@ -75,6 +75,7 @@ exports.myProfile = (req,res,next) => {
         return helper.response(res, 404, null, { message: 'id not found' })
       }
       delete result[0].password
+      delete result[0].pin
       helper.response(res, 200, result, null)
     })
     .catch(() => {
@@ -99,7 +100,8 @@ exports.addUser = (req, res, next) => {
     })
 },
 exports.updateUser = (req, res, next) => {
-  const { myId } = req
+  const { myId, myEmail } = req
+  console.log(myEmail)
   const { name, phone, username, email, password, pin, balance, roleId } = req.body
   const data = {}
 
@@ -116,6 +118,7 @@ exports.updateUser = (req, res, next) => {
   }
   if (email) {
     data.email = req.body.email
+    updateEmail(email, email)
   }
   if (pin) {
     data.pin = req.body.pin
@@ -130,7 +133,7 @@ exports.updateUser = (req, res, next) => {
     delete data.password
     updateUser(myId, data)
       .then(result => {
-        updateEmail(email, email)
+        console.log('coba')
         if (result.affectedRows === 0) {
           return helper.response(res, 404, null, { message: 'id not found' })
         }
@@ -147,7 +150,6 @@ exports.updateUser = (req, res, next) => {
         data.password = hash
         updateUser(myId, data)
           .then(result => {
-            updateEmail(email, email)
             if (result.affectedRows === 0) {
               return helper.response(res, 404, null, { message: 'id not found' })
             }

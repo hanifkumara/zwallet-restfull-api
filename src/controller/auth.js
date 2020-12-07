@@ -16,6 +16,7 @@ exports.login = (req, res, next) => {
         bcrypt.compare(password, user.password, function (err, resCheck) {
           if (!resCheck) return helper.response(res, 401, null, { message: 'Password Wrong!!' })
           delete user.password
+          delete user.pin
 
           const payload = {
             userId: user.id,
