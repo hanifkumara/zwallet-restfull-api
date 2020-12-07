@@ -13,10 +13,13 @@ exports.login = (req, res, next) => {
     .then(result => {
       if (result.length > 0) {
         const user = result[0]
+        if (user.confirmed !== 1) return helper.response(res, 401, null, { message: 'Not yet verification your email!!' })
         bcrypt.compare(password, user.password, function (err, resCheck) {
           if (!resCheck) return helper.response(res, 401, null, { message: 'Password Wrong!!' })
           delete user.password
           delete user.pin
+          delete user.roleId
+          delete user.confirmed
 
           const payload = {
             userId: user.id,
@@ -46,7 +49,7 @@ exports.register = (req, res, next) => {
     password,
     roleId
   } = req.body
-  const message = { username, password }
+  // const message = { username, password }
   checkEmail(email)
     .then(result => {
       if (result.length > 0) return helper.response(res, 401, null, { message: 'Email already exist!!' })
@@ -61,10 +64,14 @@ exports.register = (req, res, next) => {
             createdAt: new Date(),
             updatedAt: new Date()
           }
+          jwt.sign({ user: data.id }, process.env.SECRET_KEY, { expiresIn: '1d' }, (err, emailToken) => {
+            const url = `${process.env.BASE_URL}/v1/auth/confirmation/${emailToken}`;
+            sendEmail(data.email, url)
+            },
+          );
           insertUser(data)
             .then(() => {
-              sendEmail(email, message)
-              return helper.response(res, 201, { message: 'Register Sucsess' }, null)
+              return helper.response(res, 201, { message: 'Register sucsess, check your email for verification account' }, null)
             })
             .catch(() => {
               return helper.response(res, 401, null, new Error)

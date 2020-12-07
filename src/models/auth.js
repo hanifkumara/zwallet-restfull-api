@@ -35,3 +35,15 @@ exports.insertUser = (data) => {
     })
   })
 }
+
+exports.verifyUser = (id) => {
+  return new Promise((resolve, reject) => {
+    connection.query('UPDATE users SET confirmed = true WHERE id = ?', id, (error, result) => {
+      if (!error) {
+        resolve(result)
+      } else {
+        reject(error)
+      }
+    })
+  })
+}
