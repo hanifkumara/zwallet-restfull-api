@@ -1,11 +1,15 @@
 const multer = require('multer')
 const path = require('path')
+const {deletePhoto} = require('../models/users')
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './image')
   },
   filename: function (req, file, cb) {
+    const {myId} = req
+    console.log('myId',myId)
+    deletePhoto(myId)
     cb(null, file.fieldname + '-' + Date.now() + '-' + file.originalname)
   }
 })

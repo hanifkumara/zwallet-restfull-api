@@ -1,4 +1,4 @@
-const { getUsers, getUserById, addUser, updateUser, deleteUser } = require('../models/users')
+const { getUsers, getUserById, deletePhoto, updateUser, deleteUser } = require('../models/users')
 const helper = require('../helpers/helper')
 const createError = require('http-errors')
 const { pagination } = require('../helpers/pagination')

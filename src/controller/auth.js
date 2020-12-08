@@ -30,6 +30,7 @@ exports.login = (req, res, next) => {
             user.token = token
             return helper.response(res, 200, user, null)
           })
+          
         })
       } else {
         return helper.response(res, 401, null, { message: 'Username Unlisted!!' })

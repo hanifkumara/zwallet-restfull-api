@@ -1,5 +1,6 @@
 const connection = require('../config/db')
 const { actionQuery } = require('../helpers/helper')
+const fs = require('fs')
 
 exports.getUsers = (name, phone, limit, offset) => {
   return new Promise((resolve, reject) => {
@@ -28,15 +29,30 @@ exports.countUsers = () => {
 exports.getUserById = (id) => {
   return actionQuery('SELECT * FROM users WHERE id = ?', id)
 },
-
-// exports.addUser = (data) => {
-//   return actionQuery('INSERT INTO users SET ?', data, id)
-
-// },
 exports.updateUser = (myId, data) => {
   return actionQuery('UPDATE users SET ? WHERE id = ?', [data, myId])
 },
 
 exports.deleteUser = (id) => {
   return actionQuery('DELETE FROM users WHERE id = ?', id)
+}
+
+exports.deletePhoto = (id) => {
+  return new Promise((resolve, reject) => {
+    connection.query(`SELECT photo FROM users WHERE id = ?`, id, (error, result) => {
+      if (!error) {
+        const image = result[0].photo.split('/')[5]
+        const path = `image/${image}`
+        fs.unlink(path, (err) => {
+          if (err) {
+            resolve(err)
+          } else {
+            resolve({message: 'Success delete image'})
+          }
+        })
+      } else {
+        reject(error)
+      }
+    })
+  })
 }
