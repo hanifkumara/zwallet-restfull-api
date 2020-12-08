@@ -44,12 +44,15 @@ exports.login = (req, res, next) => {
 
 exports.register = (req, res, next) => {
   const id = uuidv4()
-  const {
+  let {
     username,
     email,
     password,
     roleId
   } = req.body
+  if (!roleId) {
+    roleId = "2" 
+  }
   // const message = { username, password }
   checkEmail(email)
     .then(result => {

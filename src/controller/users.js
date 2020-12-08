@@ -22,6 +22,7 @@ exports.getUsers = async (req, res, next) => {
       }
       const resultUser = result.map(value => {
         delete value.password
+        delete value.pin
         return value
       })
 
