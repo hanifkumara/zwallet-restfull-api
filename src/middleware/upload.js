@@ -8,7 +8,6 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const {myId} = req
-    console.log('myId',myId)
     deletePhoto(myId)
     cb(null, file.fieldname + '-' + Date.now() + '-' + file.originalname)
   }

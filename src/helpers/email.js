@@ -103,7 +103,6 @@ exports.updateEmail = (email, text) => {
         transporter.sendMail(message, (error, info) => {
             if (error) {
                 reject(error)
-                console.log(error)
             } else {
                 resolve(info)
             }

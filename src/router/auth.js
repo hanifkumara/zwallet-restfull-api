@@ -14,7 +14,6 @@ route
       const coba = jwt.verify(req.params.token, process.env.SECRET_KEY)
       const id = coba.user
       await verifyUser(id)
-      console.log('Subhanallah, Allah Maha Besar')
     } catch (error) {
       return helper.response(res, 401, null, { message: 'Something went wrong!!' })
     }

@@ -75,7 +75,7 @@ exports.register = (req, res, next) => {
               return helper.response(res, 201, { message: 'Register sucsess, check your email for verification account' }, null)
             })
             .catch(() => {
-              return helper.response(res, 401, null, new Error)
+              return helper.response(res, 401, null, {message: 'Register failed'})
             })
         })
       })

@@ -101,7 +101,6 @@ exports.addUser = (req, res, next) => {
 },
 exports.updateUser = (req, res, next) => {
   const { myId, myEmail } = req
-  console.log(myEmail)
   const { name, phone, username, email, password, pin, balance, roleId } = req.body
   const data = {}
 
@@ -133,7 +132,6 @@ exports.updateUser = (req, res, next) => {
     delete data.password
     updateUser(myId, data)
       .then(result => {
-        console.log('coba')
         if (result.affectedRows === 0) {
           return helper.response(res, 404, null, { message: 'id not found' })
         }
