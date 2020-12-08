@@ -41,15 +41,18 @@ exports.deletePhoto = (id) => {
   return new Promise((resolve, reject) => {
     connection.query(`SELECT photo FROM users WHERE id = ?`, id, (error, result) => {
       if (!error) {
-        const image = result[0].photo.split('/')[5]
-        const path = `image/${image}`
-        fs.unlink(path, (err) => {
-          if (err) {
-            resolve(err)
-          } else {
-            resolve({message: 'Success delete image'})
-          }
-        })
+        if (result[0].photo !== null) {
+          const image = result[0].photo.split('/')[5]
+          console.log(result[0])
+          const path = `image/${image}`
+          fs.unlink(path, (err) => {
+            if (err) {
+              resolve(err)
+            } else {
+              resolve({ message: 'Success delete image' })
+            }
+          })
+        }
       } else {
         reject(error)
       }

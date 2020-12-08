@@ -17,7 +17,7 @@ route
     } catch (error) {
       return helper.response(res, 401, null, { message: 'Something went wrong!!' })
     }
-    return helper.response(res, 200, {message: 'Verification Account Success!!'}, null)
+    return helper.response(res, 401, { message: 'Verification Email Success!!' }, null)
   })
 
 module.exports = route

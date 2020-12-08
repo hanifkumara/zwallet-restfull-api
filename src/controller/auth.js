@@ -53,37 +53,40 @@ exports.register = (req, res, next) => {
   if (!roleId) {
     roleId = "2" 
   }
-  // const message = { username, password }
   checkEmail(email)
     .then(result => {
       if (result.length > 0) return helper.response(res, 401, null, { message: 'Email already exist!!' })
-      bcrypt.genSalt(10, function (err, salt) {
-        bcrypt.hash(password, salt, function (err, hash) {
-          const data = {
-            id,
-            username,
-            email,
-            password: hash,
-            roleId,
-            createdAt: new Date(),
-            updatedAt: new Date()
-          }
-          jwt.sign({ user: data.id }, process.env.SECRET_KEY, { expiresIn: '1d' }, (err, emailToken) => {
-            const url = `${process.env.BASE_URL}/v1/auth/confirmation/${emailToken}`;
-            sendEmail(data.email, url)
-            },
-          );
-          insertUser(data)
-            .then((result) => {
-              console.log(result)
-              return helper.response(res, 201, { message: 'Register sucsess, check your email for verification account' }, null)
+      checkUser(username)
+        .then(result => {
+          if (result.length > 0) return helper.response(res, 401, null, { message: 'Username already exist!!' })
+          bcrypt.genSalt(10, function (err, salt) {
+            bcrypt.hash(password, salt, function (err, hash) {
+              const data = {
+                id,
+                username,
+                email,
+                password: hash,
+                roleId,
+                createdAt: new Date(),
+                updatedAt: new Date()
+              }
+              jwt.sign({ user: data.id }, process.env.SECRET_KEY, { expiresIn: '1d' }, (err, emailToken) => {
+                const url = `${process.env.BASE_URL}/v1/auth/confirmation/${emailToken}`;
+                sendEmail(data.email, url)
+              },
+              );
+              insertUser(data)
+                .then((result) => {
+                  console.log(result)
+                  return helper.response(res, 201, { message: 'Register sucsess, check your email for verification account' }, null)
+                })
+                .catch((err) => {
+                  console.log(err.message)
+                  return helper.response(res, 401, null, { message: 'Register failed' })
+                })
             })
-            .catch((err) => {
-              console.log(err.message)
-              return helper.response(res, 401, null, {message: 'Register failed'})
-            })
+          })
         })
-      })
     })
     .catch(() => {
       const error = createError.InternalServerError()
