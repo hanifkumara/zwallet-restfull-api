@@ -37,7 +37,7 @@ exports.roleAdmin = (req,res,next) => {
         return helper.response(res, 401, null, { message: 'Token Expired' })
       }
     }
-    if (decoded.roleId !== '1') {
+    if (decoded.roleId !== '1' || 1) {
       return helper.response(res, 401, null, { message: 'Only admin allowed to access' })
     }
     req.myId = decoded.userId
