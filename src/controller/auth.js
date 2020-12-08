@@ -18,14 +18,14 @@ exports.login = (req, res, next) => {
           if (!resCheck) return helper.response(res, 401, null, { message: 'Password Wrong!!' })
           delete user.password
           delete user.pin
-          delete user.roleId
           delete user.confirmed
-
+          
           const payload = {
             userId: user.id,
             email: user.email,
             roleId: user.roleId
           }
+          console.log('ini apa', payload.roleId)
           jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '20m' }, function (err, token) {
             user.token = token
             return helper.response(res, 200, user, null)
