@@ -101,11 +101,12 @@ exports.addUser = (req, res, next) => {
     })
 },
 exports.updateUser = (req, res, next) => {
-  const { myId, myEmail } = req
+  const { myId } = req
   const { name, phone, username, email, password, pin, balance, roleId } = req.body
   const data = {}
-
-  data.photo = `${process.env.BASE_URL}/v1/upload/${req.file.filename}`
+  if (req.file) {
+    data.photo = `${process.env.BASE_URL}/v1/upload/${req.file.filename}`
+  }
 
   if (name) {
     data.name = req.body.name

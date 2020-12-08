@@ -12,7 +12,6 @@ const storage = multer.diskStorage({
     cb(null, file.fieldname + '-' + Date.now() + '-' + file.originalname)
   }
 })
-
 const upload = multer({ storage: storage, 
   fileFilter: function (req, file, callback) {
     var ext = path.extname(file.originalname).toLocaleLowerCase();
