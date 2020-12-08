@@ -71,10 +71,12 @@ exports.register = (req, res, next) => {
             },
           );
           insertUser(data)
-            .then(() => {
+            .then((result) => {
+              console.log(result)
               return helper.response(res, 201, { message: 'Register sucsess, check your email for verification account' }, null)
             })
-            .catch(() => {
+            .catch((err) => {
+              console.log(err.message)
               return helper.response(res, 401, null, {message: 'Register failed'})
             })
         })
