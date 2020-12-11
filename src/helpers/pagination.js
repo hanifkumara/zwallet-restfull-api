@@ -25,8 +25,8 @@ exports.paginationTransaction = async (limit, page, myId) => {
     totalPage,
     currentPage: page,
     perPage: limit,
-    prevPage: page > 1 ? `${process.env.BASE_URL}/v1/transaction?page=${page - 1}&limit=${limit}` : null,
-    nextPage: page < totalPage ? `${process.env.BASE_URL}/v1/transaction?page=${page + 1}&limit=${limit}` : null
+    prevPage: page > 1 ? `${process.env.BASE_URL}/v1/transaction/idSender?page=${page - 1}` : null,
+    nextPage: page < totalPage ? `${process.env.BASE_URL}/v1/transaction/idSender?page=${page + 1}` : null
   }
   return setPagination
 }

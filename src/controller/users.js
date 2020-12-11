@@ -1,4 +1,4 @@
-const { getUsers, getUserById, deletePhoto, updateUser, deleteUser } = require('../models/users')
+const { getUsers, getUserById, updateUser, deleteUser, getListUsers } = require('../models/users')
 const helper = require('../helpers/helper')
 const createError = require('http-errors')
 const { pagination } = require('../helpers/pagination')
@@ -68,6 +68,20 @@ exports.getUserById = (req, res, next) => {
       return next(error)
     })
 },
+exports.listUsers = (req, res, next) => {
+  const {myId} = req
+  getListUsers(myId)
+    .then(result => {
+      if (result.length === 0) {
+        return helper.response(res, 404, null, { message: 'id not found' })
+      }
+      helper.response(res, 200, result, null)
+    })
+    .catch(() => {
+      const error = createError.InternalServerError()
+      return next(error)
+    })
+}
 exports.myProfile = (req,res,next) => {
   const {myId} = req
   getUserById(myId)

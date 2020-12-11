@@ -8,8 +8,8 @@ const { sendEmail } = require('../helpers/email')
 
 
 exports.login = (req, res, next) => {
-  const { username, password } = req.body
-  checkUser(username)
+  const { email, password } = req.body
+  checkEmail(email)
     .then(result => {
       if (result.length > 0) {
         const user = result[0]
@@ -25,15 +25,14 @@ exports.login = (req, res, next) => {
             email: user.email,
             roleId: user.roleId
           }
-          console.log('ini apa', payload.roleId)
-          jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '20m' }, function (err, token) {
+          jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: '5h' }, function (err, token) {
             user.token = token
             return helper.response(res, 200, user, null)
           })
           
         })
       } else {
-        return helper.response(res, 401, null, { message: 'Username Unlisted!!' })
+        return helper.response(res, 401, null, { message: 'Email Unlisted!!' })
       }
     })
     .catch(() => {
@@ -63,9 +62,12 @@ exports.register = (req, res, next) => {
             bcrypt.hash(password, salt, function (err, hash) {
               const data = {
                 id,
+                photo: 'https://placekitten.com/320/320',
                 username,
                 email,
+                phone: '08xxxxxxxx',
                 password: hash,
+                balance: 0,
                 roleId,
                 createdAt: new Date(),
                 updatedAt: new Date()

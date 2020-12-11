@@ -20,6 +20,8 @@ exports.getTransaction = async (req, res, next) => {
 }
 exports.getTransactionBySender = async (req, res, next) => {
   const { myId } = req
+  console.log(myId)
+  console.log('Bismillah')
   const idTransaction = req.params.idTransaction
   const page = req.query.page || 1
   const limit = req.query.limit || 4

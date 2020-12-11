@@ -42,7 +42,7 @@ exports.deletePhoto = (id) => {
     connection.query(`SELECT photo FROM users WHERE id = ?`, id, (error, result) => {
       if (!error) {
         console.log(result[0].photo)
-        if (result[0].photo !== null) {
+        if (result[0].photo !== 'https://placekitten.com/320/320') {
           const image = result[0].photo.split('/')[5]
           console.log(result[0])
           const path = `image/${image}`
@@ -54,6 +54,17 @@ exports.deletePhoto = (id) => {
             }
           })
         }
+      } else {
+        reject(error)
+      }
+    })
+  })
+},
+exports.getListUsers = (id) => {
+  return new Promise((resolve, reject) => {
+    connection.query(`SELECT * FROM users WHERE NOT id = '${id}' `, (error, result) => {
+      if(!error) {
+        resolve(result)
       } else {
         reject(error)
       }
