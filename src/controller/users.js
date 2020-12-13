@@ -1,7 +1,7 @@
-const { getUsers, getUserById, updateUser, deleteUser, getListUsers } = require('../models/users')
+const { getUsers, getUserById, updateUser, deleteUser, getListUsers, updateUserId } = require('../models/users')
 const helper = require('../helpers/helper')
 const createError = require('http-errors')
-const { pagination } = require('../helpers/pagination')
+const { pagination, paginationAllUsers } = require('../helpers/pagination')
 require('dotenv').config()
 const bcrypt = require('bcryptjs')
 const redis = require('redis')
@@ -12,9 +12,9 @@ exports.getUsers = async (req, res, next) => {
   const name = req.query.name
   const phone = req.query.phone
   const page = parseInt(req.query.page) || 1
-  const limit = parseInt(req.query.limit) || 8
+  const limit = parseInt(req.query.limit) || 4
   const offset = (page - 1) * limit
-  const setPagination = await pagination(limit, page)
+  const setPagination = await paginationAllUsers(limit, page)
   getUsers(name, phone, limit, offset)
     .then(result => {
       if (result.length === 0) {
@@ -26,7 +26,7 @@ exports.getUsers = async (req, res, next) => {
         return value
       })
 
-      client.setex('getAllUsers', 60 * 60 * 60, JSON.stringify(resultUser))
+      // client.setex('getAllUsers', 60 * 60 * 60, JSON.stringify(resultUser))
       helper.response(res, 200, { users: resultUser, pagination: setPagination }, null)
     })
     .catch(() => {
@@ -60,7 +60,7 @@ exports.getUserById = (req, res, next) => {
       if (result.length === 0) {
         return helper.response(res, 404, null, { message: 'id not found' })
       }
-      client.setex('cacheUserId' + id, 60 * 60 * 60, JSON.stringify(result))
+      // client.setex('cacheUserId' + id, 60 * 60 * 60, JSON.stringify(result))
       helper.response(res, 200, result, null)
     })
     .catch(() => {
@@ -68,14 +68,23 @@ exports.getUserById = (req, res, next) => {
       return next(error)
     })
 },
-exports.listUsers = (req, res, next) => {
+exports.listUsers = async (req, res, next) => {
   const {myId} = req
-  getListUsers(myId)
+  const page = parseInt(req.query.page) || 1
+  const limit = parseInt(req.query.limit) || 4
+  const offset = ( page -1 ) * limit
+  const setPagination = await pagination(myId, limit, page)
+  getListUsers(myId, limit, offset)
     .then(result => {
       if (result.length === 0) {
         return helper.response(res, 404, null, { message: 'id not found' })
       }
-      helper.response(res, 200, result, null)
+      const resultUser = result.map(value => {
+        delete value.password
+        delete value.pin
+        return value
+      })
+      helper.response(res, 200, { users: resultUser, pagination: setPagination}, null)
     })
     .catch(() => {
       const error = createError.InternalServerError()
@@ -90,7 +99,6 @@ exports.myProfile = (req,res,next) => {
         return helper.response(res, 404, null, { message: 'id not found' })
       }
       delete result[0].password
-      delete result[0].pin
       helper.response(res, 200, result, null)
     })
     .catch(() => {
@@ -116,7 +124,8 @@ exports.addUser = (req, res, next) => {
 },
 exports.updateUser = (req, res, next) => {
   const { myId } = req
-  const { name, phone, username, email, password, pin, balance, roleId } = req.body
+  const { name, phone, phone2, username, email, password, pin, balance, roleId } = req.body
+  console.log(phone2)
   const data = {}
   if (req.file) {
     data.photo = `${process.env.BASE_URL}/v1/upload/${req.file.filename}`
@@ -127,6 +136,9 @@ exports.updateUser = (req, res, next) => {
   }
   if (phone) {
     data.phone = req.body.phone
+  }
+  if (phone2) {
+    data.phone2 = req.body.phone2
   }
   if (username) {
     data.username = req.body.username
@@ -178,7 +190,23 @@ exports.updateUser = (req, res, next) => {
     })
   }
 },
-
+exports.updateUserId = (req, res, next) => {
+  const { id, balance } = req.body
+  const data = {
+    balance
+  }
+  updateUserId(id, data)
+    .then(result => {
+      if (result.affectedRows === 0) {
+        return helper.response(res, 404, null, { message: 'id not found' })
+      }
+      helper.response(res, 200, { message: 'update sucess' }, null)
+    })
+    .catch(() => {
+      const err = createError.InternalServerError()
+      return next(err)
+    })
+}
 exports.deleteUser = (req, res, next) => {
   const id = req.params.id
   deleteUser(id)

@@ -20,14 +20,14 @@ exports.getTransaction = async (req, res, next) => {
 }
 exports.getTransactionBySender = async (req, res, next) => {
   const { myId } = req
-  console.log(myId)
-  console.log('Bismillah')
   const idTransaction = req.params.idTransaction
-  const page = req.query.page || 1
-  const limit = req.query.limit || 4
+  const {name} = req.query
+  const page = parseInt(req.query.page) || 1
+  const limit = parseInt(req.query.limit) || 4
   const offset = (page - 1) * limit
+  const sort = req.query.sort || 'DESC'
   const setPagination = await paginationTransaction(limit, page, myId)
-  getTransactionBySender(myId, limit, offset, idTransaction)
+  getTransactionBySender(myId, name, limit, offset, idTransaction, sort)
     .then(result => {
       if (result.length === 0) {
         return helper.response(res, 404, null, { message: 'id not found' })
@@ -52,7 +52,7 @@ exports.getTransactionById = (req, res, next) => {
       const error = createError.InternalServerError()
       return next(error)
     })
-}
+},
 exports.addTranaction = (req, res, next) => {
   const { amountTransfer, notes, userReceiverId } = req.body
   const {myId} = req

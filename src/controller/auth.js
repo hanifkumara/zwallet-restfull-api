@@ -66,6 +66,7 @@ exports.register = (req, res, next) => {
                 username,
                 email,
                 phone: '08xxxxxxxx',
+                phone2: 'null',
                 password: hash,
                 balance: 0,
                 roleId,

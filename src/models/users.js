@@ -23,20 +23,26 @@ exports.getUsers = (name, phone, limit, offset) => {
     }
   })
 },
-exports.countUsers = () => {
-  return actionQuery('SELECT COUNT(*) AS totalData FROM users')
+exports.countUsers = (myId) => {
+  return actionQuery(`SELECT COUNT(*) as totalData FROM users WHERE NOT id = '${myId}'`)
 },
+exports.countAllUsers = () => {
+  return actionQuery(`SELECT COUNT(*) as totalData FROM users`)
+}
 exports.getUserById = (id) => {
   return actionQuery('SELECT * FROM users WHERE id = ?', id)
 },
 exports.updateUser = (myId, data) => {
   return actionQuery('UPDATE users SET ? WHERE id = ?', [data, myId])
 },
-
+exports.updateUserId = (id, data) => {
+  console.log(id)
+  console.log(data)
+  return actionQuery('UPDATE users SET ? WHERE id = ?', [data, id])
+}
 exports.deleteUser = (id) => {
   return actionQuery('DELETE FROM users WHERE id = ?', id)
 }
-
 exports.deletePhoto = (id) => {
   return new Promise((resolve, reject) => {
     connection.query(`SELECT photo FROM users WHERE id = ?`, id, (error, result) => {
@@ -60,9 +66,9 @@ exports.deletePhoto = (id) => {
     })
   })
 },
-exports.getListUsers = (id) => {
+exports.getListUsers = (id, limit, offset ) => {
   return new Promise((resolve, reject) => {
-    connection.query(`SELECT * FROM users WHERE NOT id = '${id}' `, (error, result) => {
+    connection.query(`SELECT * FROM users WHERE NOT id = '${id}' LIMIT ${limit} OFFSET ${offset}`, (error, result) => {
       if(!error) {
         resolve(result)
       } else {

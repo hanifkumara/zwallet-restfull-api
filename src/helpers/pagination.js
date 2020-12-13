@@ -1,8 +1,25 @@
 const { countTransaction } = require('../models/transaction')
-const { countUsers } = require('../models/users')
+const { countUsers, countAllUsers } = require('../models/users')
 
-exports.pagination = async (limit, page) => {
-  const users = await countUsers()
+exports.pagination = async (myId, limit, page) => {
+  const users = await countUsers(myId)
+  console.log(users)
+  const totalData = users[0].totalData
+  const totalPage = Math.ceil(totalData / limit)
+  const setPagination = {
+    totalData,
+    totalPage,
+    currentPage: page,
+    perPage: limit,
+    prevPage: page > 1 ? `${process.env.BASE_URL}/v1/users?page=${page - 1}&limit=${limit}` : null,
+    nextPage: page < totalPage ? `${process.env.BASE_URL}/v1/users?page=${page + 1}&limit=${limit}` : null
+  }
+  return setPagination
+}
+
+exports.paginationAllUsers = async (limit, page) => {
+  const users = await countAllUsers()
+  console.log(users)
   const totalData = users[0].totalData
   const totalPage = Math.ceil(totalData / limit)
   const setPagination = {
