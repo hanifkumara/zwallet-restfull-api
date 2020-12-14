@@ -19,7 +19,6 @@ exports.pagination = async (myId, limit, page) => {
 
 exports.paginationAllUsers = async (limit, page) => {
   const users = await countAllUsers()
-  console.log(users)
   const totalData = users[0].totalData
   const totalPage = Math.ceil(totalData / limit)
   const setPagination = {
@@ -36,6 +35,7 @@ exports.paginationAllUsers = async (limit, page) => {
 exports.paginationTransaction = async (limit, page, myId) => {
   const transaction = await countTransaction(myId)
   const totalData = transaction[0].totalData
+  console.log('total data transaction', totalData)
   const totalPage = Math.ceil(totalData / limit)
   const setPagination = {
     totalData,

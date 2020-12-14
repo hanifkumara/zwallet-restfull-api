@@ -47,7 +47,6 @@ exports.deletePhoto = (id) => {
   return new Promise((resolve, reject) => {
     connection.query(`SELECT photo FROM users WHERE id = ?`, id, (error, result) => {
       if (!error) {
-        console.log(result[0].photo)
         if (result[0].photo !== 'https://placekitten.com/320/320') {
           const image = result[0].photo.split('/')[5]
           console.log(result[0])
