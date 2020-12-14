@@ -21,13 +21,14 @@ exports.getTransaction = async (req, res, next) => {
 exports.getTransactionBySender = async (req, res, next) => {
   const { myId } = req
   const idTransaction = req.params.idTransaction
-  const {name} = req.query
+  const { name } = req.query
+  const { username } = req.query
   const page = parseInt(req.query.page) || 1
   const limit = parseInt(req.query.limit) || 4
   const offset = (page - 1) * limit
-  const sort = req.query.sort || 'DESC'
+  // const sort = req.query.sort || 'DESC'
   const setPagination = await paginationTransaction(limit, page, myId)
-  getTransactionBySender(myId, name, limit, offset, idTransaction, sort)
+  getTransactionBySender(myId, name, limit, offset, idTransaction, username)
     .then(result => {
       if (result.length === 0) {
         return helper.response(res, 404, null, { message: 'id not found' })
