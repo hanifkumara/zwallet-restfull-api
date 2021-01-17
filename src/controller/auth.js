@@ -54,7 +54,7 @@ exports.register = (req, res, next) => {
   }
   checkEmail(email)
     .then(result => {
-      if (result.length > 0) return helper.response(res, 401, null, { message: 'Email already exist!!' })
+      // if (result.length > 0) return helper.response(res, 401, null, { message: 'Email already exist!!' })
       checkUser(username)
         .then(result => {
           if (result.length > 0) return helper.response(res, 401, null, { message: 'Username already exist!!' })

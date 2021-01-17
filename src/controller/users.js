@@ -124,8 +124,7 @@ exports.addUser = (req, res, next) => {
 exports.updateUser = (req, res, next) => {
 	const { myId } = req;
 	const { name, phone, phone2, username, email, password, pin, balance, roleId } = req.body;
-	console.log(phone2);
-	const data = {};
+	const data = {}
 	if (req.file) {
 		data.photo = `${process.env.BASE_URL}/v1/upload/${req.file.filename}`;
 	}

@@ -3,7 +3,7 @@ const { countUsers, countAllUsers } = require('../models/users')
 
 exports.pagination = async (myId, limit, page) => {
   const users = await countUsers(myId)
-  console.log(users)
+  console.log('iki opo broo',users)
   const totalData = users[0].totalData
   const totalPage = Math.ceil(totalData / limit)
   const setPagination = {
