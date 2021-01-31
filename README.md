@@ -13,11 +13,11 @@ This API is for Zwallet App where online payment application that is convenient,
 
 ## Installation
 
-Clone this repository and then use the package manager npm to install dependencies.
+Clone this repository and then use the package manager yarn to install dependencies.
 
 
 ```bash
-npm install
+yarn install
 ```
 
 ## Setup .env example
@@ -47,20 +47,22 @@ EMAIL_PASSWORD= email1234#
 Development mode
 
 ```bash
-npm run dev
+yarn run dev
 ```
 
 Deploy mode
 
 ```bash
-npm start
+yarn start
 ```
 
 ## REST API
 
-You can view my Postman collection [here](https://www.getpostman.com/collections/65e37e55e8c3d1a69d55) </br>
+{{local-zwallet}} = http://localhost:5000/v1
+
+You can view my Postman collection [here](https://documenter.getpostman.com/view/14394222/TW6zFmbv) </br>
 or </br>
-[![run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/65e37e55e8c3d1a69d55)
+[![run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/15183632fbe1af48955a)
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
