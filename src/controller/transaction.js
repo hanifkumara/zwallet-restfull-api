@@ -34,7 +34,8 @@ exports.getTransactionBySender = async (req, res, next) => {
       }
       helper.response(res, 200, {transaction: result, pagination: setPagination}, null)
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log(err)
       const error = createError.InternalServerError()
       return next(error)
     })
