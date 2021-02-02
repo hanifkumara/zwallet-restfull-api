@@ -64,8 +64,6 @@ yarn start
 
 ## REST API
 
-{{local-zwallet}} = http://localhost:5000/v1
-
 You can view my Postman collection [here](https://documenter.getpostman.com/view/14394222/TW6zFmbv) </br>
 or </br>
 [![run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/15183632fbe1af48955a)
