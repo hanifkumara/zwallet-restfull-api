@@ -1,10 +1,11 @@
 const bcrypt = require('bcryptjs')
 const { checkEmail, checkUser, insertUser } = require('../models/auth')
+const {updateUser} = require('../models/users')
 const createError = require('http-errors')
 const helper = require('../helpers/helper')
 const { v4: uuidv4 } = require('uuid')
 const jwt = require('jsonwebtoken')
-const { sendEmail } = require('../helpers/email')
+const { sendEmail, emailForgotPassword } = require('../helpers/email')
 
 
 exports.login = (req, res, next) => {
@@ -54,7 +55,7 @@ exports.register = (req, res, next) => {
   }
   checkEmail(email)
     .then(result => {
-      // if (result.length > 0) return helper.response(res, 401, null, { message: 'Email already exist!!' })
+      if (result.length > 0) return helper.response(res, 401, null, { message: 'Email already exist!!' })
       checkUser(username)
         .then(result => {
           if (result.length > 0) return helper.response(res, 401, null, { message: 'Username already exist!!' })
@@ -63,6 +64,7 @@ exports.register = (req, res, next) => {
               const data = {
                 id,
                 photo: 'https://placekitten.com/320/320',
+                name: username,
                 username,
                 email,
                 phone: '08xxxxxxxx',
@@ -74,19 +76,25 @@ exports.register = (req, res, next) => {
                 updatedAt: new Date()
               }
               jwt.sign({ user: data.id }, process.env.SECRET_KEY, { expiresIn: '1d' }, (err, emailToken) => {
-                const url = `${process.env.BASE_URL}/v1/auth/confirmation/${emailToken}`;
-                sendEmail(data.email, url)
-              },
-              );
-              insertUser(data)
+                const url = `${process.env.BASE_URL_FRONTEND}/confirmation/${emailToken}`;
+                insertUser(data)
                 .then((result) => {
                   console.log(result)
-                  return helper.response(res, 201, { message: 'Register sucsess, check your email for verification account' }, null)
+                  return helper.response(res, 201, { message: 'Register sucsess, check your email for verification account', emailToken }, null)
                 })
                 .catch((err) => {
                   console.log(err.message)
                   return helper.response(res, 401, null, { message: 'Register failed' })
                 })
+                sendEmail(data.email, url)
+                  .then((result) => {
+                    console.log(result)
+                  })
+                  .catch((err) => {
+                    return helper.response(res, 401, null, { message: 'Something went wrong!' })
+                  });
+                },
+              );
             })
           })
         })
@@ -95,6 +103,60 @@ exports.register = (req, res, next) => {
       const error = createError.InternalServerError()
       return next(error)
     })
+}
+
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body
+    console.log('ini email', email)
+    const resEmail = await checkEmail(email)
+    console.log('cek email', resEmail)
+    if (resEmail.length < 1) {
+      return helper.response(res, 401, null, { message: 'Email not found' })
+    } else {
+      console.log('ini idnya', resEmail[0].id)
+      jwt.sign({ myId: resEmail[0].id }, process.env.SECRET_KEY, { expiresIn: '1h' }, (err, emailToken) => {
+        const url = `${process.env.BASE_URL_FRONTEND}/auth/create-password/${emailToken}`;
+        emailForgotPassword(email, url)
+        return helper.response(res, 201, { token: emailToken, message: 'Send email success. Pelase check your email now' }, null)
+      })
+    }
+  } catch (err) {
+    const error = createError.InternalServerError()
+    return next(error)
+  }
+}
+
+exports.resetPassword = (req, res, next) => {
+  try {
+    const { password } = req.body
+    console.log(password)
+    const authorization = req.headers.authorization
+    if (!authorization) return helper.response(res, 201, null, {message: 'You not have token!!'})
+    let token = authorization.split(' ')
+    token = token[1]
+    jwt.verify(token, process.env.SECRET_KEY, function (err, decoded) {
+      if (err) {
+        if (err.name === 'JsonWebTokenError') {
+          return helper.response(res, 201, null, { message: 'Invalid Token!!' })
+        } else if (err.name === 'TokenExpiredError') {
+          return helper.response(res, 201, null, {message: 'Token expired'})
+        }
+      }
+      bcrypt.genSalt(10, function (err, salt) {
+        bcrypt.hash(password, salt, function (err, hash) {
+          updateUser(decoded.myId, {password: hash})
+            .then(() => {
+              console.log(decoded)
+              return helper.response(res, 201, { message: 'Reset password success!!' }, null)
+            })
+        })
+      })
+      console.log(decoded)
+    })
+  } catch (error) {
+    return helper.response(res, 201, null, { message: 'Something went wrong!!' })
+  }
 }
 
 // exports.sendEmail = (req, res) => {

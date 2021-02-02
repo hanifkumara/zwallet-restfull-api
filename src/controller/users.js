@@ -59,6 +59,10 @@ exports.getUserById = (req, res, next) => {
 			if (result.length === 0) {
 				return helper.response(res, 404, null, { message: 'id not found' });
 			}
+			console.log('before getUserId', result)
+			delete result[0].pin
+			delete result[0].password
+			console.log('after getUserId', result)
 			// client.setex('cacheUserId' + id, 60 * 60 * 60, JSON.stringify(result))
 			helper.response(res, 200, result, null);
 		})
