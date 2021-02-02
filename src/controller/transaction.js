@@ -1,7 +1,7 @@
-const { addTransaction, getTransaction, getTransactionBySender, getTransactionById, deleteTransaction, updateTransaction } = require('../models/transaction')
+const { addTransaction, getTransaction, getTransactionBySender, getTransactionById, deleteTransaction, updateTransaction, incomeModel } = require('../models/transaction')
 const helper = require('../helpers/helper')
 const createError = require('http-errors')
-const { pagination, paginationTransaction } = require('../helpers/pagination')
+const { pagination, paginationTransaction, paginationIncome } = require('../helpers/pagination')
 
 exports.getTransaction = async (req, res, next) => {
   const page = req.query.page || 1
@@ -120,4 +120,25 @@ exports.deleteTransaction = (req, res, next) => {
       const error = createError.InternalServerError()
       return next(error)
     })
+}
+exports.getIncomeTransaction = async (req, res, next) => {
+  const {myId} = req
+  const { name } = req.query
+  const page = parseInt(req.query.page) || 1
+  const limit = parseInt(req.query.limit) || 4
+  const offset = (page - 1) * limit
+  const setPagination = await paginationIncome(limit, page, myId, name)
+  incomeModel(myId, name, limit, offset)
+    .then((result) => {
+      if (result.length === 0) {
+        return helper.response(res, 401, null, {message: 'income does not exist'})
+      }
+      console.log(result)
+      return helper.response(res, 200, {result, pagination: setPagination}, null)
+    })
+    .catch((err) => {
+      console.log(err)
+      const error = createError.InternalServerError()
+      return next(error)
+    });
 }

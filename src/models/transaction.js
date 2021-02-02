@@ -28,3 +28,9 @@ exports.deleteTransaction = (id) => {
 exports.countTransaction = (myId) => {
   return actionQuery(`SELECT COUNT(*) AS totalData FROM transaction WHERE userSenderId  = '${myId}'`)
 }
+exports.incomeModel = (myId, name, limit, offset) => {
+  return actionQuery(`SELECT transaction.*,user_sender.username as senderUsername, user_sender.balance as balanceSender , user_sender.phone as phoneSender, user_sender.name as sender, user_sender.photo as senderPhoto from transaction INNER JOIN users user_sender ON transaction.userSenderId = user_sender.id WHERE userReceiverId = '${myId}' AND user_sender.username LIKE '%${name}%' ORDER BY createdAt DESC LIMIT ${offset}, ${limit}`)
+}
+exports.countIncome = (myId, name) => {
+  return actionQuery(`SELECT COUNT(*) AS totalData, transaction.*,user_sender.username as senderUsername, user_sender.balance as balanceSender , user_sender.phone as phoneSender, user_sender.name as sender, user_sender.photo as senderPhoto from transaction INNER JOIN users user_sender ON transaction.userSenderId = user_sender.id WHERE userReceiverId = '${myId}' AND user_sender.username LIKE '%${name}%'`)
+}
