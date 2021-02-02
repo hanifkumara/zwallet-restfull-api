@@ -13,6 +13,12 @@ exports.getTransactionBySender = (myId, name,  limit, offset, idTransaction, sor
     return actionQuery(`SELECT transaction.*, user_receiver.username as receiverUsername, user_receiver.phone as phoneReceiver, user_receiver.name as receiver, user_receiver.photo as receiverPhoto from transaction INNER JOIN users user_sender ON transaction.userSenderId = user_sender.id INNER JOIN users user_receiver ON transaction.userReceiverId = user_receiver.id WHERE userSenderId = '${myId}' ORDER BY createdAt DESC LIMIT ${offset}, ${limit}`)
   }
 },
+exports.totalTransfer = (myId) => {
+  return actionQuery('SELECT * FROM transaction WHERE userSenderId = ? ', myId)
+}
+exports.totalIncome = (myId) => {
+  return actionQuery('SELECT * FROM transaction WHERE userReceiverId = ? ', myId)
+}
 exports.getTransactionById = (id) => {
   return actionQuery('SELECT * FROM transaction WHERE id = ? ', id)
 },

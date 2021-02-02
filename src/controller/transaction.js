@@ -1,4 +1,4 @@
-const { addTransaction, getTransaction, getTransactionBySender, getTransactionById, deleteTransaction, updateTransaction, incomeModel } = require('../models/transaction')
+const { addTransaction, getTransaction, getTransactionBySender, getTransactionById, deleteTransaction, updateTransaction, incomeModel, totalTransfer, totalIncome } = require('../models/transaction')
 const helper = require('../helpers/helper')
 const createError = require('http-errors')
 const { pagination, paginationTransaction, paginationIncome } = require('../helpers/pagination')
@@ -54,6 +54,39 @@ exports.getTransactionById = (req, res, next) => {
       return next(error)
     })
 },
+exports.summaryTransaction = (req, res, next) => {
+  const {myId} = req
+  totalTransfer(myId)
+    .then(transfer => {
+      totalIncome(myId)
+        .then(income => {
+          let containerTransfer = [0]
+          let containerIncome = [0]
+          transfer.map(value => {
+            containerTransfer.push(value.amountTransfer)
+          })
+          income.map(value => {
+            containerIncome.push(value.amountTransfer)
+          })
+          const resultTransfer = containerTransfer.reduce((acc, curr) => {
+            return acc + curr
+          })
+          const resultIncome = containerIncome.reduce((acc, curr) => {
+            return acc + curr
+          })
+          return helper.response(res, 200, {resultTransfer, resultIncome}, null)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      // console.log('ini result summare', result)
+    })
+    .catch((err) => {
+      console.log(err)
+      const error = createError.InternalServerError()
+      return next(error)
+    })
+}
 exports.addTranaction = (req, res, next) => {
   const { amountTransfer, notes, userReceiverId } = req.body
   const {myId} = req
@@ -72,7 +105,7 @@ exports.addTranaction = (req, res, next) => {
         insertId: result.insertId,
         data: { ...data }
       }
-      helper.response(res, 200, resultData, null)
+      return helper.response(res, 200, resultData, null)
     })
     .catch(() => {
       const error = createError.InternalServerError()

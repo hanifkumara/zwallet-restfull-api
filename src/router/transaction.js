@@ -7,7 +7,8 @@ const {
 	addTranaction,
 	updateTransaction,
 	deleteTransaction,
-	getIncomeTransaction
+	getIncomeTransaction,
+	summaryTransaction
 } = require('../controller/transaction');
 const { verifyToken, roleAdmin } = require('../middleware/auth');
 
@@ -15,6 +16,7 @@ route
 	.get('/', roleAdmin, getTransaction)
 	.get('/idSender', verifyToken, getTransactionBySender)
 	.get('/income', verifyToken, getIncomeTransaction)
+	.get('/summary', verifyToken, summaryTransaction)
 	.get('/idSender/:idTransaction', verifyToken, getTransactionBySender)
 	.get('/:id', verifyToken, getTransactionById)
 	.post('/', verifyToken, addTranaction)
