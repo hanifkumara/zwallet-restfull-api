@@ -75,7 +75,7 @@ exports.register = (req, res, next) => {
                 createdAt: new Date(),
                 updatedAt: new Date()
               }
-              jwt.sign({ user: data.id }, process.env.SECRET_KEY, { expiresIn: '1d' }, (err, emailToken) => {
+              jwt.sign({ user: data.id }, process.env.SECRET_KEY, { expiresIn: '5h' }, (err, emailToken) => {
                 const url = `${process.env.BASE_URL_FRONTEND}/confirmation/${emailToken}`;
                 insertUser(data)
                 .then((result) => {
@@ -115,7 +115,7 @@ exports.forgotPassword = async (req, res, next) => {
       return helper.response(res, 401, null, { message: 'Email not found' })
     } else {
       console.log('ini idnya', resEmail[0].id)
-      jwt.sign({ myId: resEmail[0].id }, process.env.SECRET_KEY, { expiresIn: '1h' }, (err, emailToken) => {
+      jwt.sign({ myId: resEmail[0].id }, process.env.SECRET_KEY, { expiresIn: '5h' }, (err, emailToken) => {
         const url = `${process.env.BASE_URL_FRONTEND}/auth/create-password/${emailToken}`;
         emailForgotPassword(email, url)
         return helper.response(res, 201, { token: emailToken, message: 'Send email success. Pelase check your email now' }, null)

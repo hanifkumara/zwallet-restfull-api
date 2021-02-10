@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        body{
+            padding: 50px 0;
+        }
         .container{
             display: flex;
             justify-content: center;
@@ -16,13 +19,15 @@
             height: fit-content;
         }
         .message {
-            display:flex;
-            justify-content: center;
             width: 100%;
             margin-top: 20px;
+            margin-bottom: 20px;
         }
         .message>p {
-            width: 15%
+            display:block;
+            margin: auto;
+            width: 25%;
+            margin-top: 10px;
         }
         .logo{
             width: 120px;
@@ -41,25 +46,41 @@
             padding: 10px 20px;
             background-color: #4460ff;
             border-radius: 5px;
-            margin-top: 20px;
             color: white
         }
         .wrapper>a:hover{
             border: none;
+        }
+        .text-danger{
+            font-size: 11px;
+            margin-top: 20px;
+            color: red;
+        }
+        @media screen and (max-width: 768px) {
+            .message>p {
+                width: 85%;
+            }
+            .text-danger{
+                font-size: 7px;
+                margin-top: 18px;
+                color: red;
+            }
         }
     </style>
 </head>
 <body>
     <!-- <button onclick="getUser()">Get API</button> -->
     <div class="container">
-        <div class="wrapper">
-            <h3>Congratulation</h3><div class="logo">
-                <img src="https://www.freeiconspng.com/uploads/success-icon-10.png" alt="success" />
+        <div class="wrapper">     
+            <div class="logo">
+                <img src="https://i.ibb.co/qghYvNF/logo.png" alt="success" />
             </div>
             <div class="message">
-                <p>You have successfully registered account in <span style="color: #4460ff;">Zwallet</span> </p>
+                <p>Thanks for using <span style="color: #4460ff;">Zwallet</span> </p>
+                <p>Please click the button to reset password</p>
             </div>
-            <a href="#">Go to Zwallet</a>
+            <a href="#">Reset Password</a>
+            <p class="text-danger text-align-center">The link will expire within 5 hours</p>
         </div>
     </div>
 </body>
